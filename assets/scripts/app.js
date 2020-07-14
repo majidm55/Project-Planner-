@@ -28,6 +28,14 @@ class ProjectList {
     }
     console.log(this.projects);
   }
+
+  switchProject(projectId) {
+    // const projuectIndex = this.projects.findIndex(p => p.id === projectId);
+    // this.projects.splice(projuectIndex, 1);
+    this.projects = this.projects.filter(p => p.id !== projectId)
+  }
+
+  addProject() {}
 }
 
 class App {
