@@ -13,9 +13,34 @@ class DOMHelper {
 
 }
 
-class ToolTip {}
+class ToolTip {
+  constructor(closeNotifierFunc) {
+    this.closeNotifier = closeNotifierFunc;
+  }
 
-class ProjectItem{
+  closeToolTip = () => {
+    this.remove();
+    this.closeNotifier();
+  }
+
+  remove() {
+    this.element.remove();
+    // this.element.parentElement.removeChild(this.element); "older syntax" 
+  }
+
+  show() {
+    const toolTipEl = document.createElement('div');
+    toolTipEl.className = 'card';
+    toolTipEl.textContent = "NOTHING TO SEE";
+    toolTipEl.addEventListener('click', this.closeToolTip);
+    this.element = toolTipEl;
+    document.body.append(toolTipEl);
+  }
+}
+
+class ProjectItem {
+  hasActiveTooltip = false;
+
   constructor(id, updateProjectListFunc, type) {
     this.id = id;
     this.updateProjectListHandler = updateProjectListFunc;
@@ -31,8 +56,22 @@ class ProjectItem{
     switchBtn.addEventListener('click', this.updateProjectListHandler.bind(null, this.id));
   }
 
-  connectMoreInfoButton() {
+  showMoreInfoHandler() {
+    if (this.hasActiveTooltip) {
+      return;
+    }
+    const tootlip = new ToolTip(() => {
+      this.hasActiveTooltip = false;
+    });
+    tootlip.show();
+    this.hasActiveTooltip = true;
+  }
 
+  connectMoreInfoButton() {
+    const projItemEl = document.getElementById(this.id);
+    let infoBtn = projItemEl.querySelector('button:first-of-type');
+    infoBtn.addEventListener('click', this.showMoreInfoHandler);
+    
   }
 
   update(updateProjectListFunc, type) {
