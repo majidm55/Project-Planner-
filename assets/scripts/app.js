@@ -13,30 +13,51 @@ class DOMHelper {
 
 }
 
-class ToolTip {
+class Component {
+  constructor(hostElementId, insertBefore = false) {
+    if (hostElementId) {
+      this.hostElement = document.getElementById(hostElementId);
+    } else {
+      this.hostElement = document.body;
+    }
+    this.insertBefore = insertBefore;
+  }
+
+  remove() {
+    if (this.element) {
+      this.element.remove();
+      // this.element.parentElement.removeChild(this.element); "older syntax" 
+    }
+
+  }
+
+  show() {
+    this.hostElement.insertAdjacentElement(this.insertBefore ? 'afterbegin': 'beforeend', this.element);
+  }
+}
+
+
+class ToolTip extends Component {
   constructor(closeNotifierFunc) {
+    super();
     this.closeNotifier = closeNotifierFunc;
+    this.render();
+  }
+
+  render() {
+    const toolTipEl = document.createElement('div');
+    toolTipEl.className = 'card';
+    toolTipEl.textContent = "NOTHING TO SEE";
+    toolTipEl.addEventListener('click', this.closeToolTip);
+    this.element = toolTipEl;
   }
 
   closeToolTip = () => {
     this.remove();
     this.closeNotifier();
   }
-
-  remove() {
-    this.element.remove();
-    // this.element.parentElement.removeChild(this.element); "older syntax" 
-  }
-
-  show() {
-    const toolTipEl = document.createElement('div');
-    toolTipEl.className = 'card';
-    toolTipEl.textContent = "NOTHING TO SEE";
-    toolTipEl.addEventListener('click', this.closeToolTip);
-    this.element = toolTipEl;
-    document.body.append(toolTipEl);
-  }
 }
+
 
 class ProjectItem {
   hasActiveTooltip = false;
@@ -71,7 +92,7 @@ class ProjectItem {
     const projItemEl = document.getElementById(this.id);
     let infoBtn = projItemEl.querySelector('button:first-of-type');
     infoBtn.addEventListener('click', this.showMoreInfoHandler);
-    
+
   }
 
   update(updateProjectListFunc, type) {
