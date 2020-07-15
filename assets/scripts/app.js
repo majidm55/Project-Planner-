@@ -38,16 +38,17 @@ class Component {
 
 
 class ToolTip extends Component {
-  constructor(closeNotifierFunc) {
+  constructor(closeNotifierFunc, text) {
     super();
     this.closeNotifier = closeNotifierFunc;
+    this.text = text;
     this.render();
   }
 
   render() {
     const toolTipEl = document.createElement('div');
     toolTipEl.className = 'card';
-    toolTipEl.textContent = "NOTHING TO SEE";
+    toolTipEl.textContent = this.text;
     toolTipEl.addEventListener('click', this.closeToolTip);
     this.element = toolTipEl;
   }
@@ -81,9 +82,11 @@ class ProjectItem {
     if (this.hasActiveTooltip) {
       return;
     }
+    const projectElement = document.getElementById(this.id);
+    const toolTipText = projectElement.dataset.extraInfo;
     const tootlip = new ToolTip(() => {
       this.hasActiveTooltip = false;
-    });
+    }, toolTipText);
     tootlip.show();
     this.hasActiveTooltip = true;
   }
@@ -91,7 +94,7 @@ class ProjectItem {
   connectMoreInfoButton() {
     const projItemEl = document.getElementById(this.id);
     let infoBtn = projItemEl.querySelector('button:first-of-type');
-    infoBtn.addEventListener('click', this.showMoreInfoHandler);
+    infoBtn.addEventListener('click', this.showMoreInfoHandler.bind(this));
 
   }
 
