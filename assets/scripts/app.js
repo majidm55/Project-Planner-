@@ -9,7 +9,9 @@ class DOMHelper {
     const element = document.getElementById(elementId);
     const destinationElement = document.querySelector(newDestinationSelector);
     destinationElement.append(element);
-    element.scrollIntoView({behavior: 'smooth'});
+    element.scrollIntoView({
+      behavior: 'smooth'
+    });
   }
 
 }
@@ -33,7 +35,7 @@ class Component {
   }
 
   show() {
-    this.hostElement.insertAdjacentElement(this.insertBefore ? 'afterbegin': 'beforeend', this.element);
+    this.hostElement.insertAdjacentElement(this.insertBefore ? 'afterbegin' : 'beforeend', this.element);
   }
 }
 
@@ -49,7 +51,10 @@ class ToolTip extends Component {
   render() {
     const toolTipEl = document.createElement('div');
     toolTipEl.className = 'card';
-    toolTipEl.textContent = this.text;
+    const toolTipTemplate = document.getElementById('tooltip');
+    const toolTipBody = document.importNode(toolTipTemplate.content, true);
+    toolTipBody.querySelector('p').textContent = this.text;
+    toolTipEl.append(toolTipBody);
 
     const hostElPosLeft = this.hostElement.offsetLeft;
     const hostElPosTop = this.hostElement.offsetTop;
@@ -82,6 +87,18 @@ class ProjectItem {
     this.updateProjectListHandler = updateProjectListFunc;
     this.connectSwitchButton(type);
     this.connectMoreInfoButton();
+    this.connectDrag();
+  }
+  connectDrag() {
+    const item = document.getElementById(this.id)
+    item.addEventListener('dragstart', event => {
+      event.dataTransfer.setData('text/plain', this.id);
+      event.dataTransfer.effectAllowed = 'move';
+    });
+
+    item.addEventListener('dragend', event => {
+      console.log('drag end', event);
+    });
   }
 
   connectSwitchButton(type) {
@@ -128,7 +145,41 @@ class ProjectList {
       this.projects.push(new ProjectItem(projItem.id, this.switchProject.bind(this), this.type));
     }
     console.log(this.projects);
+    this.connectDroppable();
   }
+
+  connectDroppable() {
+    const list = document.querySelector(`#${this.type}-projects ul`);
+
+    list.addEventListener('dragenter', event => {
+      if (event.dataTransfer.types[0] === 'text/plain') {
+        list.parentElement.classList.add('droppable');
+        event.preventDefault();
+      }
+    });
+
+    list.addEventListener('dragover', event => {
+      event.preventDefault();
+    });
+
+    list.addEventListener('dragleave', event => {
+      if (event.relatedTarget.closest(`#${this.type}-projects ul`) !== list) {
+        list.parentElement.classList.remove('droppable');
+      }
+    });
+
+    list.addEventListener('drop', event => {
+      const projId = event.dataTransfer.getData('text/plain');
+      if (this.projects.find(p => p.id === projId)) {
+        return;
+      }
+      document.getElementById(projId).querySelector('button:last-of-type').click();
+      list.parentElement.classList.remove('droppable');
+      // event.preventDefault(); // not required
+
+    });
+
+  };
 
   setSwitchHandlerFunction(switchHandlerFunction) {
     this.switchHandler = switchHandlerFunction;
@@ -154,6 +205,22 @@ class App {
     const finishedProjectList = new ProjectList('finished');
     activeProjectList.setSwitchHandlerFunction(finishedProjectList.addProject.bind(finishedProjectList));
     finishedProjectList.setSwitchHandlerFunction(activeProjectList.addProject.bind(activeProjectList));
+
+    // const someScript = document.createElement('script');
+    // someScript.textContent = 'alert("Hi there!")';
+    // document.head.append(someScript);
+
+    // const timeId = setTimeout(this.startAnalytics, 3000);
+    // document.getElementById('stop-analytics-btn').addEventListener('click', () => {
+    //   clearTimeout(timeId);
+    // });
+  }
+
+  static startAnalytics() {
+    const analyticsScript = document.createElement('script');
+    analyticsScript.src = 'assets/scripts/analytics.js';
+    analyticsScript.defer = true;
+    document.head.append(analyticsScript);
   }
 }
 
