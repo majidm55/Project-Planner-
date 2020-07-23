@@ -5,6 +5,10 @@ export class ToolTip extends Component {
     super(hostElementId);
     this.closeNotifier = closeNotifierFunc;
     this.text = text;
+    this.closeToolTip = () => {
+      this.remove();
+      this.closeNotifier();
+      };
     this.render();
   }
 
@@ -32,8 +36,5 @@ export class ToolTip extends Component {
     this.element = toolTipEl;
   }
 
-  closeToolTip = () => {
-    this.remove();
-    this.closeNotifier();
-  }
+
 }

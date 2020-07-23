@@ -1,0 +1,22 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "rules": {
+        
+        "quote-props": "error",
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": "error",
+        "no-undef": "off"
+        
+    }
+}

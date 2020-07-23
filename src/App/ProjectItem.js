@@ -1,19 +1,20 @@
 import { DOMHelper } from '../Utility/DOMHelper.js';
-import { ToolTip } from './TootlTip.js';
+// import { ToolTip } from './ToolTip.js';
 
 
 export class ProjectItem {
-  hasActiveTooltip = false;
+  // hasActiveTooltip = false;
 
   constructor(id, updateProjectListFunc, type) {
     this.id = id;
+    this.hasActiveTooltip = false;
     this.updateProjectListHandler = updateProjectListFunc;
     this.connectSwitchButton(type);
     this.connectMoreInfoButton();
     this.connectDrag();
   }
   connectDrag() {
-    const item = document.getElementById(this.id)
+    const item = document.getElementById(this.id);
     item.addEventListener('dragstart', event => {
       event.dataTransfer.setData('text/plain', this.id);
       event.dataTransfer.effectAllowed = 'move';
@@ -38,11 +39,17 @@ export class ProjectItem {
     }
     const projectElement = document.getElementById(this.id);
     const toolTipText = projectElement.dataset.extraInfo;
-    const tootlip = new ToolTip(() => {
-      this.hasActiveTooltip = false;
-    }, toolTipText, this.id);
-    tootlip.show();
-    this.hasActiveTooltip = true;
+    import('./ToolTip.js').then(module => {
+      const tooltip = new module.ToolTip(
+        () => {
+        this.hasActiveTooltip = false;
+      }, 
+      toolTipText, 
+      this.id
+      );
+      tooltip.show();
+      this.hasActiveTooltip = true;
+    });
   }
 
   connectMoreInfoButton() {
@@ -54,6 +61,6 @@ export class ProjectItem {
 
   update(updateProjectListFunc, type) {
     this.updateProjectListHandler = updateProjectListFunc;
-    this.connectSwitchButton(type)
+    this.connectSwitchButton(type);
   }
 }

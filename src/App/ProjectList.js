@@ -1,15 +1,18 @@
-import { ProjectItem } from './ProjectItem.js';
-import { DOMHelper } from '../Utility/DOMHelper.js';
+// import { ProjectItem } from './ProjectItem.js';
+import { ProjectItem as PrjItem } from './ProjectItem.js';
+import * as DOMH from '../Utility/DOMHelper.js';
+// import { moveElement } '../Utility/DOMHelper.js';
 
 
 export class ProjectList {
-  projects = [];
+  // projects = [];
 
   constructor(type) {
     this.type = type;
+    this.projects = [];
     const projItems = document.querySelectorAll(`#${type}-projects li`);
     for (const projItem of projItems) {
-      this.projects.push(new ProjectItem(projItem.id, this.switchProject.bind(this), this.type));
+      this.projects.push(new PrjItem(projItem.id, this.switchProject.bind(this), this.type));
     }
     console.log(this.projects);
     this.connectDroppable();
@@ -46,7 +49,7 @@ export class ProjectList {
 
     });
 
-  };
+  }
 
   setSwitchHandlerFunction(switchHandlerFunction) {
     this.switchHandler = switchHandlerFunction;
@@ -61,7 +64,7 @@ export class ProjectList {
   addProject(project) {
     console.log(project);
     this.projects.push(project);
-    DOMHelper.moveElement(project.id, `#${this.type}-projects ul`);
+    DOMH.moveElement(project.id, `#${this.type}-projects ul`);
     project.update(this.switchProject.bind(this), this.type);
   }
 }
