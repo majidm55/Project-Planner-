@@ -20,7 +20,7 @@ export class ProjectList {
 
   connectDroppable() {
     const list = document.querySelector(`#${this.type}-projects ul`);
-
+    console.log(list);
     list.addEventListener('dragenter', event => {
       if (event.dataTransfer.types[0] === 'text/plain') {
         list.parentElement.classList.add('droppable');
